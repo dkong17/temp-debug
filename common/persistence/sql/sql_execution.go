@@ -221,6 +221,18 @@ func (m *sqlExecutionManager) createWorkflowExecutionTx(
 func (m *sqlExecutionManager) GetWorkflowExecution(
 	request *p.GetWorkflowExecutionRequest,
 ) (*p.InternalGetWorkflowExecutionResponse, error) {
+	defer func() {
+		switch retError.(type) {
+		case nil:
+		// noop
+		case *serviceerror.NotFound:
+			fmt.Println("####")
+			fmt.Println(string(debug.Stack()))
+			fmt.Println("####")
+		default:
+			// noop
+		}
+	}()
 	ctx, cancel := newExecutionContext()
 	defer cancel()
 	namespaceID := primitives.MustParseUUID(request.NamespaceID)
