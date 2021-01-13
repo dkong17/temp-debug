@@ -29,6 +29,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"runtime/debug"
 
 	"go.temporal.io/api/serviceerror"
 
@@ -220,7 +221,7 @@ func (m *sqlExecutionManager) createWorkflowExecutionTx(
 
 func (m *sqlExecutionManager) GetWorkflowExecution(
 	request *p.GetWorkflowExecutionRequest,
-) (*p.InternalGetWorkflowExecutionResponse, error) {
+) (_ *p.InternalGetWorkflowExecutionResponse, retError error) {
 	defer func() {
 		switch retError.(type) {
 		case nil:
