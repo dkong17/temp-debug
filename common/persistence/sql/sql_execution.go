@@ -29,7 +29,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"runtime/debug"
 
 	"go.temporal.io/api/serviceerror"
 
@@ -221,19 +220,7 @@ func (m *sqlExecutionManager) createWorkflowExecutionTx(
 
 func (m *sqlExecutionManager) GetWorkflowExecution(
 	request *p.GetWorkflowExecutionRequest,
-) (_ *p.InternalGetWorkflowExecutionResponse, retError error) {
-	defer func() {
-		switch retError.(type) {
-		case nil:
-		// noop
-		case *serviceerror.NotFound:
-			fmt.Println("####")
-			fmt.Println(string(debug.Stack()))
-			fmt.Println("####")
-		default:
-			// noop
-		}
-	}()
+) (*p.InternalGetWorkflowExecutionResponse, error) {
 	ctx, cancel := newExecutionContext()
 	defer cancel()
 	namespaceID := primitives.MustParseUUID(request.NamespaceID)

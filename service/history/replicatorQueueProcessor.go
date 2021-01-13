@@ -28,6 +28,7 @@ import (
 	"context"
 	"errors"
 	"time"
+	"fmt"
 
 	commonpb "go.temporal.io/api/common/v1"
 	"go.temporal.io/api/serviceerror"
@@ -301,7 +302,7 @@ func (p *replicatorQueueProcessorImpl) getTasks(
 	pollingCluster string,
 	lastReadTaskID int64,
 ) (*replicationspb.ReplicationMessages, error) {
-
+	fmt.Printf("@@@\n%v - %v - %v\n@@@\n", p.shard.GetShardID(), pollingCluster, lastReadTaskID)
 	if lastReadTaskID == persistence.EmptyQueueMessageID {
 		lastReadTaskID = p.shard.GetClusterReplicationLevel(pollingCluster)
 	} else {
@@ -662,6 +663,7 @@ func (p *replicatorQueueProcessorImpl) processReplication(
 		}
 		return action(msBuilder)
 	case *serviceerror.NotFound:
+		fmt.Printf("###\n%v - %v - %v - %v\n###\n", p.shard.GetShardID(), namespaceID, workflowID, runID)
 		return nil, nil
 	default:
 		return nil, err
